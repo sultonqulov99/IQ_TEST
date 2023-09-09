@@ -11,7 +11,7 @@ function emailSender(userEmail,email_code){
         
         auth: {
           user: 'omonov2006omonov@gmail.com', 
-          pass: 'ibwwpqhfhuqtnpqt'
+          pass: 'wkocegbefwfizukv'
         }
       });
     const mailOptions = {
