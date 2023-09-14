@@ -40,6 +40,14 @@ const POST = async(req,res,next) => {
         const email_code = Math.floor(Math.random() * 10000);
         let {name,surname,status_id,password,email} = req.body
         password = sha256(password)
+        let login = await pool.query(`SELECT * FROM users WHERE email = '${email}' and password ='${password}'`)
+        login = login.rows
+        if(login.length != 0){
+          return res.status(202).json({
+            status:202,
+            massage: "User already exists"
+          })
+        }
         if(emailSender(email,email_code)){
           let user = await pool.query(`INSERT INTO users(name,surname,email,status_id,password,email_code) VALUES
           ($1,$2,$3,$4,$5,$6) RETURNING *`,[name,surname,email,status_id,password,email_code])
@@ -97,6 +105,7 @@ const GET_STATUS = async(req,res,next) => {
 const POST_LOGIN = async(req,res,next) =>{
     try {
       let {email,password} = req.body 
+      password = sha256(password)
       let login = await pool.query(`SELECT * FROM users WHERE email = '${email}' and password ='${password}'`)
       login = login.rows
       if(login.length == 0){
@@ -107,7 +116,8 @@ const POST_LOGIN = async(req,res,next) =>{
       }
       return res.status(200).json({
         status:200,
-        massage:"User found"
+        massage:login,
+        token: JWT.sign({userId: login[0].user_id},'12345'),
       })
     } catch (error) {
       return next(new InternalServerError(500,error.massage))
@@ -141,11 +151,43 @@ const POST_SUBJECT = async(req,res,next) => {
   }
 }
 
+const GET_USERS = async(req,res,next) => {
+  try {
+    let users = await pool.query(`SELECT * FROM users`)
+    users = users.rows
+
+    return res.status(200).json({
+      status:200,
+      massage:"All users",
+      data:users
+    })
+  } catch (error) {
+    return next(new InternalServerError(500,error.massage))
+  }
+}
+
+const TOKEN_VERIFY = (req,res,next) => {
+  try {
+    let {token} = req.query
+    let token_verify = JWT.verify(token,'12345')
+    
+    if(token_verify){
+        return res.status(200).json({
+          status:200,
+          massage:"OK",
+        })
+    }
+  } catch (error) {
+    return next(new InternalServerError(500,error.massage))
+  }
+}
 export default {
     POST,
     GET,
     GET_STATUS,
     POST_LOGIN,
     POST_STATUS,
-    POST_SUBJECT
+    POST_SUBJECT,
+    GET_USERS,
+    TOKEN_VERIFY
 }
