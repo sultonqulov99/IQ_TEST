@@ -5,8 +5,8 @@ const pool = new Pool.Pool({
     password: 'YZeyieTqA-2FiAQWjawwyTNwni4RAPBn',
     database: 'mvupcjjs',
     host: 'arjuna.db.elephantsql.com',
-    port: 5432
-})
+    port: 5432           
+})  
 
     // user: 'mvupcjjs',
     // password: 'YZeyieTqA-2FiAQWjawwyTNwni4RAPBn',

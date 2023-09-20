@@ -11,6 +11,7 @@ router.post('/api/subjectAdd',validation,controller.POST_SUBJECT)
 
 router.get('/api/users/emailCode/:emailCode',controller.GET)
 router.get('/api/users/statusId/:statusId',controller.GET_STATUS)
+router.get('/api/users/status',controller.STATUS)
 router.get('/api/users',controller.GET_USERS)
 router.get('/api/users/token',controller.TOKEN_VERIFY)
 

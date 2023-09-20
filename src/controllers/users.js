@@ -58,7 +58,7 @@ const POST = async(req,res,next) => {
             massage:"Confirm your email addres. We sent emailCode",
             data:user.rows,
             token: JWT.sign({userId: user.rows[0].user_id},'12345'),
-        })   
+        })  
         }
         return res.status(409).json({
           status:409,
@@ -93,6 +93,13 @@ const GET_STATUS = async(req,res,next) => {
     let {statusId} = req.params
     let subjects = await pool.query(`select * from subject where status_id = '${statusId}'`)
     subjects = subjects.rows
+    if(subjects.length == 0){
+      return res.status(404).json({
+        status:404,
+        massage:"Status not found",
+        data:[]
+      })
+    }
     return res.status(200).json({
       status:200,
       massage:"ok",
@@ -181,6 +188,22 @@ const TOKEN_VERIFY = (req,res,next) => {
     return next(new InternalServerError(500,error.massage))
   }
 }
+
+
+
+const STATUS = async(req,res,next) => {
+  try {
+    let status = await pool.query(`select * from status`)
+    status = status.rows
+    return res.status(200).json({
+      status:200,
+      massage:"ok",
+      data:status
+    })
+  } catch (error) {
+    return next(new InternalServerError(500,error.massage))
+  }
+}
 export default {
     POST,
     GET,
@@ -189,5 +212,6 @@ export default {
     POST_STATUS,
     POST_SUBJECT,
     GET_USERS,
-    TOKEN_VERIFY
+    TOKEN_VERIFY,
+    STATUS
 }
